@@ -9,6 +9,7 @@ import XCTest
 @testable import TaskFramework
 
 final class OrderedTests: XCTestCase {
+    
     private final class FakeTask<Input, Output>: Task {
         let executionClosure: (Input) -> TaskResult<Output, Error>
 

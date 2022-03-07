@@ -14,7 +14,7 @@ infix operator ==>: AdditionPrecedence
 /// - Parameters:
 ///   - lhs: First task
 ///   - rhs: Second task
-func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
+public func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
     where L.Output == R.Input {
         return Ordered(lhs, and: rhs)
 }
@@ -26,7 +26,7 @@ func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
 /// - Parameters:
 ///   - lhs: First task
 ///   - rhs: Second task
-func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
+public func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
     where L.Output == R.Input, L.Output == Void {
         return Ordered(lhs, and: rhs)
 }
@@ -39,7 +39,7 @@ func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, R>
 /// - Parameters:
 ///   - lhs: First task
 ///   - rhs: Second task
-func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<Holder<T, L>, R>
+public func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<Holder<T, L>, R>
     where R.Input == (T, L.Output) {
         return Ordered(Holder<T, L>(wrapping: lhs), and: rhs)
 }
@@ -52,7 +52,7 @@ func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<Holder<T, L>, R>
 /// - Parameters:
 ///   - lhs: First task
 ///   - rhs: Second task
-func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<CompactHolder<T, L>, R>
+public func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<CompactHolder<T, L>, R>
     where R.Input == (T, L.Output), L.Input == Void {
         return Ordered(CompactHolder<T, L>(wrapping: lhs), and: rhs)
 }
@@ -64,7 +64,18 @@ func ==> <T, L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<CompactHolder<T, L>, R
 /// - Parameters:
 ///   - lhs: First task
 ///   - rhs: Second task
-func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, Isolated<L.Output, R>>
+public func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<L, Isolated<L.Output, R>>
     where R.Input == Void, R.Output == Void {
         return Ordered(lhs, and: Isolated(rhs))
+}
+
+/// Provides a way to chain tasks in case the first task does not affect the current data.
+/// This takes the data needed for the second task, executes the first one, and then starts the second task with the given data.
+/// For instance: `CheckConnectivity() ==> LoginByEmailAndPassword()`
+/// - Parameters:
+///   - lhs: First task
+///   - rhs: Second task
+public func ==> <L: Task, R: Task>(lhs: L, rhs: R) -> Ordered<Isolated<R.Input, L>, R>
+    where L.Input == Void, L.Output == Void {
+        return Ordered(Isolated(lhs), and: rhs)
 }

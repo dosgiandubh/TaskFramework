@@ -8,19 +8,22 @@
 /// Wrapper that isolates a wrapped task from any data it receives.
 /// It is usually used with a task is needed to be done in the middle of a chain,
 /// but wants nothing to start its work.
-final class Isolated<TransientData, NestedTask: Task>:
+public final class Isolated<TransientData, NestedTask: Task>:
     Task
 where
     NestedTask.Input == Void,
     NestedTask.Output == Void
 {
-    private let nestedTask: NestedTask
+    public let nestedTask: NestedTask
 
-    init(_ nestedTask: NestedTask) {
+    public init(_ nestedTask: NestedTask) {
         self.nestedTask = nestedTask
     }
 
-    func start(with input: TransientData, completion: @escaping (TaskResult<TransientData, NestedTask.Error>) -> Void) {
+    public func start(
+        with input: TransientData,
+        completion: @escaping (TaskResult<TransientData, NestedTask.Error>) -> Void
+    ) {
         nestedTask.start(with: ()) { nestedTaskResult in
             switch nestedTaskResult {
                 case .success:
